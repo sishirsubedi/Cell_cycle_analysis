@@ -1,4 +1,7 @@
-#good explanation of the paper
+# This algorithm is modified version of
+# Cheng, Y., & Church, G. M.(2000, August). Biclustering of expression data. In Ismb (Vol. 8, pp. 93-103).
+# here, biclustering is done only allowing rows(genes) to cluster together in fixed time-points(columns)
+# good explanation of the paper
 #http://www.kemaleren.com/cheng-and-church.html
 
 

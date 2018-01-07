@@ -1,3 +1,7 @@
+# this algorithm models and compares operons from our data vs published literature
+
+
+
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
