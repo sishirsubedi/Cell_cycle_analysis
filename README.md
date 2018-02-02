@@ -1,4 +1,5 @@
 # RNA-Seq_analysis
 
 
-This is a data analysis for RNA-Seq data from M.Tuberculosis.
+This folder consits of scripts generated during the data analysis of
+RNA-Seq data from M.Tuberculosis at TAMU-Bioinformatics Lab.
