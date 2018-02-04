@@ -5,7 +5,7 @@ This folder consists of scripts generated during the analysis of
 RNA-Seq data from M.Tuberculosis at TAMU-Bioinformatics Lab.
 
 Major sections are:
-- normalization
+- normalization and identifying significant genes (anova analysis)
 - operon modeling and comparison with published literature
 - periodicity analysis of gene expression using fft,metacycle, curve-fitting
 - smoothing of gene expression and transposon data using bayesian gaussian regression
