@@ -17,110 +17,63 @@ library(lattice)
 raw_counts <- read.csv('1_mean_expression_cos_all2948_sig.csv', header=FALSE,row.names=1)
 head(raw_counts)
 raw_counts = t(raw_counts)
-# 
-# cormat <- round(cor(raw_counts),2)
-# my_palette <- colorRampPalette(c("red", "black", "green"))(n = 299)
-# col_breaks = c(seq(-0.99,-0.75,length=100),  # for red
-#                seq(-0.74,0.74,length=100),           # for yellow
-#                seq(0.75,1,length=100))    
-# heatmap.2(as.matrix(cor(raw_counts)), 
-#           main = "", # heat map title
-#           #notecol="black",      # change font color of cell labels to black
-#           density.info="none",  # turns off density plot inside color legend
-#           trace="none",         # turns off trace lines inside the heat map    
-#           col=my_palette,       # use on color palette defined earlier
-#           breaks=col_breaks,    # enable color transition at specified limits
-#           dendrogram="row",     # only draw a row dendrogram
-#           Colv="none", Rowv="none",key=FALSE,
-#           cexRow=1, cexCol=1, lwid=c(0.1,1), lhei=c(0.1,1),
-#           margins=c(5,25)) # column label for 10 and row label size 25 
-# 
-# ##### choose power for soft thresholding
-# 
-# powers1=c(seq(1,10,by=1),seq(12,20,by=2))
-# 
-# RpowerTable=pickSoftThreshold(raw_counts, powerVector = powers1)[[2]]
-# 
-# RpowerTable
-# 
-# plot(RpowerTable[,'Power'],RpowerTable[,'SFT.R.sq'],type = 'l')
-# 
-# # Now we plot scale free fit R^2 versus different soft threshold beta 
-# cex1=0.7 
-# par(mfrow=c(1,2)) 
-# plot(RpowerTable[,1], -sign(RpowerTable[,3])*RpowerTable[,2],xlab="Soft Threshold (power)",ylab="Scale Free Topology Model Fit,signed R^2",type="n") 
-# text(RpowerTable[,1], -sign(RpowerTable[,3])*RpowerTable[,2], labels=powers1,cex=cex1,col="red") 
-# # this line corresponds to using an R^2 cut-off of h
-# 
-# plot(RpowerTable[,1], RpowerTable[,5],xlab="Soft Threshold (power)",ylab="Mean Connectivity", type="n") 
-# text(RpowerTable[,1], RpowerTable[,5], labels=powers1, cex=cex1,col="red") 
-# abline(h=0.5,col="red") 
-# 
-# pickSoftThreshold(
-#   raw_counts,
-#   dataIsExpr = TRUE,
-#   RsquaredCut = 0.1,
-#   powerVector = c(seq(1, 10, by = 1), seq(12, 20, by = 2)),
-#   removeFirst = FALSE, nBreaks = 10, blockSize = NULL,
-#   corFnc = cor, corOptions = list(use = 'p'),
-#   networkType = "signed",
-#   moreNetworkConcepts = FALSE,
-#   gcInterval = NULL,
-#   verbose = 0, indent = 0)
-# 
-# ############################
-# #this combines correlation and eculidean distance
-# cordist <- function(dat) {
-#     cor_matrix  <- cor(t(dat))
-#     # calculate distance eculidean, show diagnola and upper triangle of matrix
-#     dist_matrix <- as.matrix(dist(dat, diag=TRUE, upper=TRUE))
-#     #log1p(x) function computes log(x+1) accurately.
-#     #dist_matrix <- log1p(dist_matrix)
-#     #bring between 0 and 1 
-#     dist_matrix <- 1 - (dist_matrix / max(dist_matrix))
-#     # sign for -1 or +1 - combine correlation and E(graph)
-#     sign(cor_matrix) * ((abs(cor_matrix) + dist_matrix)/ 2)
-# }
-# 
-# 
-# 
-# sim_matrix <- cordist(raw_counts)
-# dim(sim_matrix)
-# # transformation to push high/down correlation values to preseve strongest correlation
-# adj_matrix <- adjacency.fromSimilarity(sim_matrix, power=10, type='signed')
-# 
-# rm(sim_matrix)
-# gc()
-# 
-# 
-# 
-# 
-# graph <- graph_from_adjacency_matrix(adj_matrix, mode=c("undirected"), weighted = TRUE)
-# 
-# V(graph)
-# E(graph)
-# graph <- simplify(graph,remove.loops=T)
-# 
-# #plot(E(graph)$weight)
-# sum(E(graph)$weight >=.9)
-# sum(E(graph)$weight >=.8)
-# sum(E(graph)$weight >=.7)
-# sum(E(graph)$weight >=.6)
-# sum(E(graph)$weight >=.5)
-# 
-# #sum(degree(graph)<1)
-# 
-# #graph <- simplify(graph,remove.loops=T)
-# graph=delete.edges(graph, which(E(graph)$weight <.8)) # here's my condition.
-# graph=delete.vertices(graph,which(degree(graph)<1))
-# 
-# 
-# #write.graph(graph, "network_periodic.graphml", format='graphml')
-# write.graph(graph, "4_network_0.9.graphml", format='graphml')
-# 
-# 
-# 
 
+
+#######   correlation network using free scale topology
+
+
+######    this combines correlation and eculidean distance
+cordist <- function(dat) {
+    cor_matrix  <- cor(t(dat))
+    # calculate distance eculidean, show diagnola and upper triangle of matrix
+    dist_matrix <- as.matrix(dist(dat, diag=TRUE, upper=TRUE))
+    #log1p(x) function computes log(x+1) accurately.
+    #dist_matrix <- log1p(dist_matrix)
+    #bring between 0 and 1 
+    dist_matrix <- 1 - (dist_matrix / max(dist_matrix))
+    # sign for -1 or +1 - combine correlation and E(graph)
+    sign(cor_matrix) * ((abs(cor_matrix) + dist_matrix)/ 2)
+}
+
+
+
+sim_matrix <- cordist(raw_counts)
+dim(sim_matrix)
+# transformation to push high/down correlation values to preseve strongest correlation
+adj_matrix <- adjacency.fromSimilarity(sim_matrix, power=10, type='signed')
+
+rm(sim_matrix)
+gc()
+
+graph <- graph_from_adjacency_matrix(adj_matrix, mode=c("undirected"), weighted = TRUE)
+
+V(graph)
+E(graph)
+graph <- simplify(graph,remove.loops=T)
+
+#plot(E(graph)$weight)
+sum(E(graph)$weight >=.9)
+sum(E(graph)$weight >=.8)
+sum(E(graph)$weight >=.7)
+sum(E(graph)$weight >=.6)
+sum(E(graph)$weight >=.5)
+
+#sum(degree(graph)<1)
+
+#graph <- simplify(graph,remove.loops=T)
+graph=delete.edges(graph, which(E(graph)$weight <.8)) # here's my condition.
+graph=delete.vertices(graph,which(degree(graph)<1))
+
+
+#write.graph(graph, "network_periodic.graphml", format='graphml')
+write.graph(graph, "4_network_0.9.graphml", format='graphml')
+
+
+
+
+
+
+########### correlation model using wcgna function
 
 gene.names=colnames(raw_counts)
 SubGeneNames=gene.names
@@ -283,9 +236,6 @@ for (i in 1:length(modules)){
   medians[i] =  paste(med,collapse=",")
 }
 write.table(medians,"medians.csv",sep=",",quote = FALSE)
-
-
-
 
 
 

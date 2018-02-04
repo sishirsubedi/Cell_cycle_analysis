@@ -6,22 +6,13 @@ from matplotlib import pyplot as plt
 np.random.seed(1)
 from numpy import unravel_index
 
-
-
-
 ##################################### 6:GPy package - COS/RV as two groups
 
 cos_smooth = []
 rv_smooth = []
 
-
-
-
-
-
 X = [3.0, 6.5, 9.0, 12.0, 18.5, 21.0, 27.0, 31.0, 33.0, 36.0, 39.5, 42.0, 45.5, 52.0, 55.0, \
      3.0, 6.5, 9.0, 12.0, 18.5, 21.0, 27.0, 31.0, 33.0, 36.0, 39.5, 42.0, 45.5, 52.0, 55.0]
-
 
 
 x_pred = X[0:15]
@@ -41,7 +32,7 @@ for row in df_cos2.iterrows():
     index, data = row
     temp_cos2.append(data.tolist())
 
-lenscales =[]
+lenscales_cos =[]
 
 for rv in range(0,len(temp_cos1)):
     ycos1= temp_cos1[rv]
@@ -49,29 +40,16 @@ for rv in range(0,len(temp_cos1)):
     y1 = ycos1[1:] + ycos2[1:]
     Y = np.atleast_2d(y1).T
 
-    res = [[0.0 for x in range(50)] for y in range(50)]
-    for v in range(1, 50):
-        for l in range(1, 50):
-            kernel = GPy.kern.RBF(input_dim=1, variance=v, lengthscale=l)
-            m = GPy.models.GPRegression(X, Y, kernel, noise_var=0.01)
-            res[v][l] = m.log_likelihood()
+    res = []
+    for l in range(1,50):
+        kernel = GPy.kern.RBF(input_dim=1, variance=1.0, lengthscale=l)
+        m = GPy.models.GPRegression(X, Y, kernel, noise_var=0.1)
+        res.append( m.log_likelihood())
 
-    result = np.array(res)
-    result = result[1:, 1:]
-
-    variance,lengthscale = unravel_index(result.argmax(), result.shape)
-
-
-    print ycos1[0] , variance, lengthscale
-
-    lenscales.append(lengthscale)
-
-    kernel = GPy.kern.RBF(input_dim=1, variance=1, lengthscale=lengthscale)
-    m = GPy.models.GPRegression(X, Y,kernel,noise_var=0.01)
-
-
+    lenscale = res.index(max(res))+1
+    kernel = GPy.kern.RBF(input_dim=1, variance=1.0, lengthscale=lenscale)
+    m = GPy.models.GPRegression(X, Y,kernel,noise_var=0.1)
     mu,C=m.predict(x_pred, full_cov=True)
-
     mu = [val for sublist in mu for val in sublist]
 
     temp=[]
@@ -79,6 +57,9 @@ for rv in range(0,len(temp_cos1)):
     for items in mu:
         temp.append(items)
     cos_smooth.append(temp)
+
+
+    lenscales_cos.append([ycos1[0],lenscale])
 
 
 df_rv1 = pd.read_csv('4_rv1_logmean.csv', delimiter=',',header=0)
@@ -103,9 +84,16 @@ for rv in range(0,len(temp_rv1)):
     #y= np.log(y)
 
     Y = np.atleast_2d(y).T
+
+    res = []
+    for l in range(1, 50):
+        kernel = GPy.kern.RBF(input_dim=1, variance=1.0, lengthscale=l)
+        m = GPy.models.GPRegression(X, Y, kernel, noise_var=0.1)
+        res.append(m.log_likelihood())
+
+    lenscale = res.index(max(res)) + 1
+    kernel = GPy.kern.RBF(input_dim=1, variance=1.0, lengthscale=lenscale)
     m = GPy.models.GPRegression(X, Y,kernel,noise_var=0.01)
-
-
     mu,C=m.predict(x_pred, full_cov=True)
 
     mu = [val for sublist in mu for val in sublist]
@@ -129,4 +117,6 @@ smooth_rv.columns = ["Rv", "rv_sm_2", "rv_sm_3", "rv_sm_4", "rv_sm_5", "rv_sm_6"
 
 smooth_rv.to_csv("final_rv_smooth.csv",index = False)
 smooth_cos.to_csv("final_cos_smooth.csv", index = False)
+
+
 

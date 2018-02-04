@@ -4,6 +4,81 @@ import statsmodels.api as sm
 import  matplotlib.pylab as plt
 from sklearn.cluster import KMeans,AgglomerativeClustering
 
+# df_tfs = pd.read_csv('tfs_peak7_.csv',header=0)
+#
+# df_genes = pd.read_csv('genes_peak7_.csv',header=0)
+#
+# xdata = df_tfs.loc[:,'3hrs':'55hrs']
+# #xdata = df_tfs.iloc[:,3:18]
+# xdata = xdata.T
+# xdata.columns = df_tfs['ORF ID']
+# print xdata.head(1)
+# plt.plot( xdata['Rv0038'])
+# print xdata.shape
+#
+# df_genes.head(1)
+# ydata = df_genes.loc[df_genes.loc[df_genes['gene'] == 'ftsW'].index.values.astype(int)[0],'3hrs':'55hrs']
+# ydata = ydata.T
+# print ydata.shape
+#
+# plt.plot( xdata['Rv0038'],'ro-')
+# plt.plot(ydata,'bo-')
+
+
+############# run one polynomial for rv0038 ###########
+#
+#
+# x = xdata['Rv0038']
+# y = np.array(ydata,dtype=float)
+# x2 = x ** 2.0
+# df = pd.concat([x, x2], axis=1)
+# df.columns = ['x','x2']
+# poly_2 = sm.OLS(y,df.values).fit()
+#
+# plt.plot( xdata['Rv0038'], 'ro-',label='original x')
+# plt.plot(y,'bo-',label ='original y ')
+# plt.plot( poly_2.predict(df.values), 'go-',label = 'poly2' + '/rsq:' + str(poly_2.rsquared_adj))
+#
+# x = xdata['Rv0038']
+# y = np.array(ydata,dtype=float)
+# x2 = x ** 2.0
+# x3 = x ** 3.0
+# df = pd.concat([x, x2,x3], axis=1)
+# df.columns = ['x','x2','x3']
+# poly_3 = sm.OLS(y,df.values).fit()
+# plt.plot( poly_3.predict(df.values), 'mo-',label = 'poly3' + '/rsq:'  + str(poly_3.rsquared_adj))
+#
+# x = xdata['Rv0038']
+# y = np.array(ydata,dtype=float)
+# x2 = x ** 2.0
+# x3 = x ** 3.0
+# x4 = x ** 4.0
+# df = pd.concat([x, x2,x3,x4], axis=1)
+# df.columns = ['x','x2','x3','x4']
+# poly_4 = sm.OLS(y,df.values).fit()
+# plt.plot( poly_4.predict(df.values), 'yo-',label = 'poly4'+ '/rsq:' + str(poly_4.rsquared_adj))
+#
+#
+#
+#
+# x = xdata['Rv0038']
+# y = np.array(ydata,dtype=float)
+# x2 = x ** 2.0
+# x3 = x ** 3.0
+# x4 = x ** 4.0
+# x5 = x ** 5.0
+# df = pd.concat([x, x2,x3,x4,x5], axis=1)
+# df.columns = ['x','x2','x3','x4','x5']
+# poly_5 = sm.OLS(y,df.values).fit()
+# plt.plot( poly_5.predict(df.values), 'co-',label = 'poly5'+ '/rsq:'  + str(poly_5.rsquared_adj))
+# plt.legend()
+
+###############################################################################
+
+
+### cluster tfs
+
+
 
 df_tfs = pd.read_csv('tfs_peak7_.csv',header=0)
 
@@ -17,18 +92,18 @@ xdata.index = df_tfs.loc[:,'ORF ID']
 
 ################ check number of cluster using kMeans error
 
-cluster_range = range( 1, 20 )
-cluster_errors = []
-
-for num_clusters in cluster_range:
-  clusters = KMeans( num_clusters )
-  clusters.fit( xdata )
-  cluster_errors.append( clusters.inertia_ )
-clusters_df = pd.DataFrame( { "num_clusters":cluster_range, "cluster_errors": cluster_errors } )
-clusters_df[0:10]
-
-plt.figure(figsize=(12,6))
-plt.plot( clusters_df.num_clusters, clusters_df.cluster_errors, marker = "o" )
+# cluster_range = range( 1, 20 )
+# cluster_errors = []
+#
+# for num_clusters in cluster_range:
+#   clusters = KMeans( num_clusters )
+#   clusters.fit( xdata )
+#   cluster_errors.append( clusters.inertia_ )
+# clusters_df = pd.DataFrame( { "num_clusters":cluster_range, "cluster_errors": cluster_errors } )
+# clusters_df[0:10]
+#
+# plt.figure(figsize=(12,6))
+# plt.plot( clusters_df.num_clusters, clusters_df.cluster_errors, marker = "o" )
 
 ##############################################################
 
